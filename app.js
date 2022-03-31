@@ -1,6 +1,7 @@
 // Global variable
 // @ts-check
 let playerTurn = true;
+const modeAI = true;
 
 function Player(name, mark, lastSelection) {
   let score = 0;
@@ -119,8 +120,18 @@ const displayController = (() => {
   };
 })();
 
+function moveAI() {
+  const selection = Math.floor(Math.random() * 8);
+  gameFlow(selection);
+}
+
 function gameFlow(square) {
   let player;
+
+  if (gameBoard.getGameOver()) {
+    return;
+  }
+
   if (playerTurn === true) {
     player = playerOne;
   } else {
@@ -131,12 +142,17 @@ function gameFlow(square) {
   const playIsValid = gameBoard.play(player);
 
   if (playIsValid) {
+    if (!playerTurn && modeAI) {
+      // Delay play when playing against AI
+      setTimeout(() => displayController.updateBoard(gameBoard.getArray()), 300);
+    } else {
+      displayController.updateBoard(gameBoard.getArray());
+    }
     playerTurn = !playerTurn;
-    displayController.updateBoard(gameBoard.getArray());
   }
 
   const winner = gameBoard.winner();
-  if (winner && !gameBoard.getGameOver()) {
+  if (winner) {
     winner.addWin();
     displayController.showWinner(winner);
     displayController.updateScore();
@@ -147,8 +163,15 @@ function gameFlow(square) {
   const tie = gameBoard.tie();
   if (tie) {
     displayController.showTie();
+    gameBoard.setGameOver();
+    return;
+  }
+
+  if (modeAI && !playerTurn) {
+    moveAI();
   }
 }
+
 displayController.updateBoard(gameBoard.getArray());
 displayController.updateScore();
 
@@ -157,4 +180,5 @@ document.querySelector('#new-button').addEventListener('click', () => {
   displayController.updateBoard(gameBoard.getArray());
   displayController.updateScore();
   displayController.hideResult();
+  playerTurn = true;
 });
