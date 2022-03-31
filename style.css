@@ -1,3 +1,8 @@
+:root{
+    --primary: #BB86FC;
+    --light: rgb(233, 233, 233);
+}
+
 html {
   box-sizing: border-box;
 }
@@ -10,23 +15,8 @@ body{
     margin: 0;
 	border: 0px solid transparent;
     font-family: Roboto, sans-serif;
-}
-
-a{
-	text-decoration: none;
-	color: hsl(0, 0%, calc(var(--lightness-offset, 0%) + 0%));    
-}
-
-a:hover{
-	--lightness-offset: 7%;
-}
-
-a:active{
-	--lightness-offset: -10%;
-}
-
-li{
-	list-style-type: none;
+    background-color:  #2e2e2e;
+    color: var(--light)
 }
 
 img{
@@ -42,10 +32,10 @@ h1 {
 }
 */
 button{
-    border-radius: 1em;
-    border: none;
-	background-color: hsl(210, 86%, calc(var(--lightness-offset, 0%) + 57%));    
-	color: white;
+    border-radius: 0.51em;
+	background-color: hsl(180, 5%, calc(var(--lightness-offset, 0%) + 10%));    
+	border: solid thin #a09696;
+    color: var(--light);
     padding: 0.5em 1em;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     cursor: pointer;
@@ -68,4 +58,56 @@ button:active{
     margin: 0 auto;
     width: min(100vw, 1500px);
     padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+#header{
+    text-align: center;
+    font-size: 3em;
+    padding: 1em;
+}
+
+#score{
+    display: flex;
+    align-self: center;
+    gap: 1em;
+    font-size: 3em;
+    
+}
+
+#board{
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    justify-content: center;
+    text-align: center;
+    margin: 3em;
+}
+
+#new-button{
+    
+    text-align: center;
+    margin: 1em;
+}
+
+.square{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+    font-size: 3em;
+}
+
+.square[data-id='1'], .square[data-id='7']{
+    border-right: solid;
+    border-left: solid;
+}
+.square[data-id='3'], .square[data-id='5']{
+    border-top: solid;
+    border-bottom: solid;
+}
+.square[data-id='4']{
+    border: solid;
 }
