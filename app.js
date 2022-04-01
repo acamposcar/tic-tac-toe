@@ -11,13 +11,13 @@ function Player(name, mark, lastMove) {
   };
 }
 
-const playerOne = Player('Player 1', '✔️');
-const playerTwo = Player('Player 2', '❌');
+const playerOne = Player('🧑', '✔️');
+const playerTwo = Player('👲', '❌');
 
 const gameStatus = (() => {
   // ModeAI = true -> PlayerOne vs AI
   // ModeAI = false -> PlayerOne vs PlayerTwo
-  let modeAI = true;
+  let modeAI = false;
   const getModeAI = () => modeAI;
   const setModeAI = () => { modeAI = true; };
   const resetModeAI = () => { modeAI = false; };
@@ -124,6 +124,11 @@ const displayController = (() => {
     scoreTwo.textContent = playerB.getScore().toString();
   }
 
+  function updatePlayerEmoji(playerA, playerB) {
+    playerB.name = gameStatus.getModeAI() ? '🤖' : '👲';
+    document.querySelector('#name-player-one').textContent = playerA.name;
+    document.querySelector('#name-player-two').textContent = playerB.name;
+  }
   function showWinner(player) {
     const result = document.querySelector('#result');
     result.textContent = `The winner is ${player.name}`;
@@ -140,7 +145,7 @@ const displayController = (() => {
   }
 
   return {
-    updateBoard, showWinner, showTie, hideResult, updateScore,
+    updateBoard, showWinner, showTie, hideResult, updateScore, updatePlayerEmoji,
   };
 })();
 
@@ -200,13 +205,30 @@ function gameFlow(move, playerA, playerB) {
   }
 }
 
-displayController.updateBoard(gameBoard.getArray());
-displayController.updateScore(playerOne, playerTwo);
-
-document.querySelector('#new-button').addEventListener('click', () => {
+function initiateGame() {
   gameBoard.resetBoard();
   gameStatus.resetStatus();
   displayController.updateBoard(gameBoard.getArray());
   displayController.updateScore(playerOne, playerTwo);
   displayController.hideResult();
+  displayController.updatePlayerEmoji(playerOne, playerTwo);
+}
+
+function changePlayer(checkbox) {
+  const setMode = checkbox.checked ? gameStatus.setModeAI : gameStatus.resetModeAI;
+  setMode();
+  playerOne.resetScore();
+  playerTwo.resetScore();
+}
+
+document.querySelector('#new-button').addEventListener('click', () => {
+  initiateGame();
 });
+
+const checkbox = document.querySelector('input[type="checkbox"]');
+checkbox.addEventListener('click', () => {
+  changePlayer(checkbox);
+  initiateGame();
+});
+
+initiateGame();
