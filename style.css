@@ -126,6 +126,34 @@ h1 {
     gap: 1em;
 
 }
+
+/* POPUP */
+.popup {
+		display: none; /* Change with JS to flex*/
+    flex-direction: column;
+    justify-content: center;
+    place-items: center;
+    margin: 0 auto;
+    padding: 1em;
+    border-radius: 1em;
+    color: black;
+    background: white;
+    min-width: min(400px, 90vw);
+    min-height: 100px;
+    font-size: 2em;
+
+
+    /* Position */
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    
+    -webkit-box-shadow: 0px 0px 0px 9999px rgba(0, 0, 0, 0.8);
+    box-shadow: 0px 0px 0px 9999px rgba(0, 0, 0, 0.8);
+}
+
 /* SWITCH */
 .switch-mode{
     display: flex;

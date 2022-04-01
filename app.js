@@ -129,14 +129,26 @@ const displayController = (() => {
     document.querySelector('#name-player-one').textContent = playerA.name;
     document.querySelector('#name-player-two').textContent = playerB.name;
   }
+
+  function showPopup(popupElement) {
+    setTimeout(() => {
+      popupElement.style.display = 'flex';
+    }, 300);
+    setTimeout(() => {
+      popupElement.style.display = 'none';
+    }, 3000);
+  }
+
   function showWinner(player) {
-    const result = document.querySelector('#result');
-    result.textContent = `The winner is ${player.name}`;
+    const popupElement = document.querySelector('.popup');
+    popupElement.textContent = `The winner is ${player.name}`;
+    showPopup(popupElement);
   }
 
   function showTie() {
-    const result = document.querySelector('#result');
-    result.textContent = "It's a tie";
+    const popupElement = document.querySelector('.popup');
+    popupElement.textContent = "It's a tie";
+    showPopup(popupElement);
   }
 
   function hideResult() {
