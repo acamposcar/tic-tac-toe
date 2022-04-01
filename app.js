@@ -12,12 +12,12 @@ function Player(name, mark, lastMove) {
 }
 
 const playerOne = Player('🧑', '✔️');
-const playerTwo = Player('👲', '❌');
+const playerTwo = Player('🤖', '❌');
 
 const gameStatus = (() => {
   // ModeAI = true -> PlayerOne vs AI
   // ModeAI = false -> PlayerOne vs PlayerTwo
-  let modeAI = false;
+  let modeAI = true;
   const getModeAI = () => modeAI;
   const setModeAI = () => { modeAI = true; };
   const resetModeAI = () => { modeAI = false; };
