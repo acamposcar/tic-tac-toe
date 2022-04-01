@@ -5,25 +5,44 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic tac toe</title>
+    <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto&display=swap" rel="stylesheet">
     <script src="app.js" defer></script>
 </head>
 
 <body>
     <div class="container">
         <div id="header">TIC TAC TOE</div>
-        <div id="score">
-            <div id="score-player-one">
-            </div>
-            <div id="score-player-two">
 
+        <div id="score">
+            <div id="name-player-one" class="player">
+            </div>
+            <div id="score-player-one" class="score-num">
+            </div>
+            -
+            <div id="score-player-two" class="score-num">
+            </div>
+            <div id="name-player-two" class="player">
             </div>
         </div>
         <div id="board"></div>
-        <button id="new-button">New Game</button>
-        <div id="result"></div>
+        <div id="options">
+            <button id="new-button" class="btn">New Game</button>
+            <div class="switch-mode">
+                Play versus AI
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+
+            </div>
+
+        </div>
+        <div id="result" class="popup"></div>
     </div>
 </body>
 
