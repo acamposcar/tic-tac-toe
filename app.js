@@ -1,34 +1,58 @@
 // Global variable
 // @ts-check
-let playerTurn = true;
-const modeAI = true;
 
-function Player(name, mark, lastSelection) {
+function Player(name, mark, lastMove) {
   let score = 0;
   const getScore = () => score;
   const addWin = () => { score++; };
   const resetScore = () => { score = 0; };
   return {
-    name, mark, lastSelection, addWin, getScore, resetScore,
+    name, mark, lastMove, addWin, getScore, resetScore,
   };
 }
 
 const playerOne = Player('Player 1', '✔️');
 const playerTwo = Player('Player 2', '❌');
 
+const gameStatus = (() => {
+  // ModeAI = true -> PlayerOne vs AI
+  // ModeAI = false -> PlayerOne vs PlayerTwo
+  let modeAI = true;
+  const getModeAI = () => modeAI;
+  const setModeAI = () => { modeAI = true; };
+  const resetModeAI = () => { modeAI = false; };
+
+  let playerOneTurn = true;
+  const getPlayerOneTurn = () => playerOneTurn;
+  const togglePlayerOneTurn = () => { playerOneTurn = !playerOneTurn; };
+
+  let gameOver = false;
+  const setGameOver = () => { gameOver = true; };
+  const getGameOver = () => gameOver;
+
+  const resetStatus = () => {
+    gameOver = false;
+    playerOneTurn = true;
+  };
+  return {
+    resetStatus,
+    getGameOver,
+    setGameOver,
+    getPlayerOneTurn,
+    togglePlayerOneTurn,
+    getModeAI,
+    setModeAI,
+    resetModeAI,
+  };
+})();
+
 const gameBoard = (() => {
   let gameArray = [];
-  let gameFinished = false;
   const getArray = () => gameArray;
-  const getGameOver = () => gameFinished;
-  const setGameOver = () => { gameFinished = true; };
-  const resetBoard = () => {
-    gameArray = [];
-    gameFinished = false;
-  };
+  const resetBoard = () => { gameArray = []; };
 
   const winner = () => {
-    // If winner, return Player, else return false
+    // If there is a winner, return winner Player, else return false
     if (gameArray[0] && gameArray[0] === gameArray[1] && gameArray[1] === gameArray[2]) {
       return gameArray[0];
     }
@@ -64,18 +88,18 @@ const gameBoard = (() => {
     return false;
   };
 
-  const play = (player) => {
-    // If play is invalid (square is already taken or lastSelection is invalid), return false
-    // If play is valid, return true
-    if (gameArray[player.lastSelection] || player.lastSelection > 8 || player.lastSelection < 0 || winner() || tie()) {
+  const makeMove = (player) => {
+    // If move is invalid (square is already taken or lastMove is invalid), return false
+    // If move is valid, save the move and return true
+    if (gameArray[player.lastMove] || player.lastMove > 8 || player.lastMove < 0 || winner() || tie()) {
       return false;
     }
-    gameArray[player.lastSelection] = player;
+    gameArray[player.lastMove] = player;
     return true;
   };
 
   return {
-    play, getArray, resetBoard, winner, tie, getGameOver, setGameOver,
+    makeMove, getArray, resetBoard, winner, tie,
   };
 })();
 
@@ -88,16 +112,16 @@ const displayController = (() => {
       square.classList.add('square');
       square.dataset.id = i.toString();
       square.textContent = array[i] ? array[i].mark : '';
-      square.onclick = () => gameFlow(square.dataset.id);
+      square.onclick = () => gameFlow(square.dataset.id, playerOne, playerTwo);
       board.append(square);
     }
   }
 
-  function updateScore() {
+  function updateScore(playerA, playerB) {
     const scoreOne = document.querySelector('#score-player-one');
     const scoreTwo = document.querySelector('#score-player-two');
-    scoreOne.textContent = playerOne.getScore().toString();
-    scoreTwo.textContent = playerTwo.getScore().toString();
+    scoreOne.textContent = playerA.getScore().toString();
+    scoreTwo.textContent = playerB.getScore().toString();
   }
 
   function showWinner(player) {
@@ -120,65 +144,69 @@ const displayController = (() => {
   };
 })();
 
-function moveAI() {
-  const selection = Math.floor(Math.random() * 8);
-  gameFlow(selection);
-}
-
-function gameFlow(square) {
+function gameFlow(move, playerA, playerB) {
   let player;
 
-  if (gameBoard.getGameOver()) {
+  // Check if game is already finished
+  if (gameStatus.getGameOver()) {
     return;
   }
 
-  if (playerTurn === true) {
-    player = playerOne;
+  // Select current player
+  if (gameStatus.getPlayerOneTurn() === true) {
+    player = playerA;
   } else {
-    player = playerTwo;
+    player = playerB;
   }
 
-  player.lastSelection = parseInt(square, 10);
-  const playIsValid = gameBoard.play(player);
+  // Save current player move
+  player.lastMove = parseInt(move, 10);
 
+  // Check if current player made a valid move
+  const playIsValid = gameBoard.makeMove(player);
   if (playIsValid) {
-    if (!playerTurn && modeAI) {
-      // Delay play when playing against AI
-      setTimeout(() => displayController.updateBoard(gameBoard.getArray()), 300);
+    if (!gameStatus.getPlayerOneTurn() && gameStatus.getModeAI()) {
+      // Delay when playing against AI
+      setTimeout(() => displayController.updateBoard(gameBoard.getArray()), 400);
     } else {
       displayController.updateBoard(gameBoard.getArray());
     }
-    playerTurn = !playerTurn;
+    gameStatus.togglePlayerOneTurn();
   }
 
+  // Check if there is a winner
   const winner = gameBoard.winner();
   if (winner) {
     winner.addWin();
     displayController.showWinner(winner);
-    displayController.updateScore();
-    gameBoard.setGameOver();
+    displayController.updateScore(playerA, playerB);
+    gameStatus.setGameOver();
     return;
   }
 
+  // Check if there it's a tie
   const tie = gameBoard.tie();
   if (tie) {
     displayController.showTie();
-    gameBoard.setGameOver();
+    gameStatus.setGameOver();
     return;
   }
 
-  if (modeAI && !playerTurn) {
-    moveAI();
+  // AI play: recursion until some random move is valid
+  // AI always plays on PlayerTwo
+  if (gameStatus.getModeAI() && !gameStatus.getPlayerOneTurn()) {
+    const randomMove = Math.floor(Math.random() * 8);
+    gameFlow(randomMove, playerA, playerB);
   }
 }
 
 displayController.updateBoard(gameBoard.getArray());
-displayController.updateScore();
+displayController.updateScore(playerOne, playerTwo);
 
 document.querySelector('#new-button').addEventListener('click', () => {
   gameBoard.resetBoard();
+  gameStatus.resetStatus();
   displayController.updateBoard(gameBoard.getArray());
-  displayController.updateScore();
+  displayController.updateScore(playerOne, playerTwo);
   displayController.hideResult();
-  playerTurn = true;
 });
